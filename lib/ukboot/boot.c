@@ -193,7 +193,8 @@ void ukplat_entry(int argc, char *argv[])
 	tma.argv = argv;
 
 #if HAVE_SCHED
-	main_thread = uk_thread_create("main", main_thread_func, &tma);
+	for(int i = 0; i < 100; i++)
+		main_thread = uk_thread_create("main", main_thread_func, &tma);
 	if (unlikely(!main_thread))
 		UK_CRASH("Could not create main thread.");
 	uk_thread_start(main_thread);

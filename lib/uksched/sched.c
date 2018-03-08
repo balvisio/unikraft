@@ -97,12 +97,13 @@ struct uk_thread *uk_sched_thread_create(struct uk_sched *sched,
 		char *name, void (*function)(void *), void *data)
 {
 	struct uk_thread *thread;
-
+	uk_printd(DLVL_ERR, "Inside uk_sched_thread_create: thread\n");
 	thread = uk_malloc(sched->allocator, sizeof(struct uk_thread));
 	if (thread == NULL) {
 		uk_printd(DLVL_WARN, "Error allocating memory for thread.");
 		goto out;
 	}
+	uk_printd(DLVL_ERR, "Inside uk_sched_thread_create: stack\n");
 
 	/* We can't use lazy allocation here
 	 * since the trap handler runs on the stack

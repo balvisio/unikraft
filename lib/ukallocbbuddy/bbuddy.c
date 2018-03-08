@@ -41,8 +41,10 @@
 #include <stdint.h>
 #include <errno.h>
 
+
 #include <uk/allocbbuddy.h>
 #include <uk/arch/limits.h>
+#include <uk/plat/balloon.h>
 #include <uk/print.h>
 #include <uk/assert.h>
 
@@ -225,6 +227,10 @@ static void *bbuddy_palloc(struct uk_alloc *a, size_t order)
 	UK_ASSERT(a != NULL);
 	b = (struct uk_bbpalloc *)&a->private;
 
+	//balvisio: Here is where the chk_free_pages() (balloning) should be done
+	if (!chk_free_pages(b->nr_free_pages, 1UL << order))
+		goto no_memory;
+
 	/* Find smallest order which can satisfy the request. */
 	for (i = order; i < FREELIST_SIZE; i++) {
 		if (!FREELIST_EMPTY(b->free_head[i]))
@@ -361,13 +367,17 @@ static int bbuddy_addmem(struct uk_alloc *a, void *base, size_t len)
 	/*
 	 * Initialize region's bitmap
 	 */
+	 uk_printkd(DLVL_ERR, "Here 1\n");
 	memr->first_page = min;
 	memr->nr_pages = max - min;
+	memr->mm_alloc_bitmap_size = (max + 1) >> (__PAGE_SHIFT + 3);
+	memr->mm_alloc_bitmap_size = round_pgup(memr->mm_alloc_bitmap_size);
 	/* add to list */
 	memr->next = b->memr_head;
 	b->memr_head = memr;
 	/* free up the memory we've been given to play with */
 	map_free(b, min, (unsigned long)(range >> __PAGE_SHIFT));
+	 uk_printkd(DLVL_ERR, "Here 2\n");
 
 	count = 0;
 	while (range != 0) {
@@ -396,6 +406,7 @@ static int bbuddy_addmem(struct uk_alloc *a, void *base, size_t len)
 		ct->level = i;
 		count++;
 	}
+	 uk_printkd(DLVL_ERR, "Here 3\n");
 
 	return 0;
 }

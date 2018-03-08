@@ -42,6 +42,9 @@ LIBXENPLAT_CFLAGS-y            += -DCONFIG_PARAVIRT
 endif
 endif
 
+LIBXENPLAT_ASFLAGS-y           += -DCONFIG_BALLOON
+LIBXENPLAT_CFLAGS-y            += -DCONFIG_BALLOON
+
 ifneq (,$(filter arm arm_64,$(UK_ARCH)))
 LIBXENPLAT_SRCS-y              += $(LIBXENPLAT_BASE)/arm/setup.c
 LIBXENPLAT_SRCS-y              += $(LIBXENPLAT_BASE)/arm/traps.c
@@ -59,3 +62,4 @@ LIBXENPLAT_SRCS-y              += $(LIBXENPLAT_BASE)/shutdown.c
 LIBXENPLAT_SRCS-y              += $(LIBXENPLAT_BASE)/events.c
 LIBXENPLAT_SRCS-$(LIBUKSCHED)  += $(LIBXENPLAT_BASE)/thread.c
 LIBXENPLAT_SRCS-$(LIBUKSCHED)  += $(LIBXENPLAT_BASE)/sched.c
+LIBXENPLAT_SRCS-y              += $(LIBXENPLAT_BASE)/balloon.c

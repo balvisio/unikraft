@@ -18,4 +18,10 @@ if (PLAT_XEN)
 		instead of the hypervisor console. When this
 		option is enabled the hypervisor console is used
 		for kernel messages only.
+
+	config CONFIG_BALLOON
+	bool "Ballooning"
+	default n
+	help
+	   Enable guest ballooning functionality.
 endif
