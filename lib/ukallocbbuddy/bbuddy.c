@@ -107,7 +107,7 @@ static inline struct uk_bbpalloc_memr *map_get_memr(struct uk_bbpalloc *b,
 	 */
 	for (memr = b->memr_head; memr != NULL; memr = memr->next) {
 		if ((page_num >= memr->first_page)
-		    && (page_num < (memr->first_page + memr->nr_pages)))
+		    && (page_num < (memr->first_page + memr->nr_pages * __PAGE_SIZE)))
 			return memr;
 	}
 
@@ -145,7 +145,7 @@ static void map_alloc(struct uk_bbpalloc *b, uintptr_t first_page,
 	memr = map_get_memr(b, first_page);
 	UK_ASSERT(memr != NULL);
 	UK_ASSERT((first_page + nr_pages)
-		  <= (memr->first_page + memr->nr_pages));
+		  <= (memr->first_page + memr->nr_pages * __PAGE_SIZE));
 
 	first_page -= memr->first_page;
 	curr_idx = first_page / PAGES_PER_MAPWORD;
@@ -362,7 +362,11 @@ static int bbuddy_addmem(struct uk_alloc *a, void *base, size_t len)
 	 * Initialize region's bitmap
 	 */
 	memr->first_page = min;
-	memr->nr_pages = max - min;
+	int spare = (max - min ) % __PAGE_SIZE;
+	UK_ASSERT(spare == 0);
+	memr->nr_pages = (max - min) / __PAGE_SIZE;
+	memr->mm_alloc_bitmap_size = round_pgup((max + 1) >> (__PAGE_SHIFT + 3));
+
 	/* add to list */
 	memr->next = b->memr_head;
 	b->memr_head = memr;
