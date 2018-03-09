@@ -74,6 +74,7 @@
 #include <uk/plat/config.h>
 #include <uk/plat/console.h>
 #include <uk/plat/bootstrap.h>
+#include <uk/plat/balloon.h>
 
 #include <xen/xen.h>
 #include <common/console.h>
@@ -173,6 +174,8 @@ static inline void _init_mem(void)
 
 void _libxenplat_x86entry(void *start_info) __noreturn;
 
+unsigned long nr_free_pages;
+
 void _libxenplat_x86entry(void *start_info)
 {
 	_init_traps();
@@ -189,6 +192,15 @@ void _libxenplat_x86entry(void *start_info)
 
 	/* Set up events. */
 	init_events();
+
+	/* Get max pages */
+	/* Eventually get_max_pages() will need to be inserted in a
+	* function such as init_mm (memory.c) and in turn init_mm() should
+	* be called by both x86 and ARM code. init_mm() should be placed
+	* in some shared file (plat/xen/kernel.c ???) and should be called
+	* by all archs
+	*/
+	get_max_pages();
 
 	/* ENABLE EVENT DELIVERY. This is disabled at start of day. */
 	__sti();

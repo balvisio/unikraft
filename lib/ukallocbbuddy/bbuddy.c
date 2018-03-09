@@ -45,6 +45,7 @@
 #include <uk/arch/limits.h>
 #include <uk/print.h>
 #include <uk/assert.h>
+#include <uk/balloon.h>
 
 typedef struct chunk_head_st chunk_head_t;
 typedef struct chunk_tail_st chunk_tail_t;
@@ -221,6 +222,9 @@ static void *bbuddy_palloc(struct uk_alloc *a, size_t order)
 	size_t i;
 	chunk_head_t *alloc_ch, *spare_ch;
 	chunk_tail_t *spare_ct;
+
+   if ( !chk_free_pages(1UL << order) )
+        goto no_memory;
 
 	UK_ASSERT(a != NULL);
 	b = (struct uk_bbpalloc *)&a->private;
