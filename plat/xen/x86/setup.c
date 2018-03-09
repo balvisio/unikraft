@@ -74,6 +74,7 @@
 #include <uk/plat/config.h>
 #include <uk/plat/console.h>
 #include <uk/plat/bootstrap.h>
+#include <uk/plat/balloon.h>
 
 #include <xen/xen.h>
 #include <common/console.h>
