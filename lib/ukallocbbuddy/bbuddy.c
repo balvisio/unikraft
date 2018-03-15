@@ -363,6 +363,7 @@ static int bbuddy_addmem(struct uk_alloc *a, void *base, size_t len)
 	 */
 	memr->first_page = min;
 	memr->nr_pages = (max - min) >> __PAGE_SIZE;
+	memr->mm_alloc_bitmap_size = round_pgup((max + 1) >> (__PAGE_SHIFT + 3));
 
 	/* add to list */
 	memr->next = b->memr_head;
